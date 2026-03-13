@@ -63,6 +63,7 @@ export default function MapView({
   const fetchControllerRef = useRef(null);
   const alrLayerRef = useRef(null);
   const alrFetchRef = useRef(null);
+  const measureModeRef = useRef(false);
   const measurePointsRef = useRef([]);
   const measureLayerRef = useRef(null);
   const measureMarkersRef = useRef([]);
@@ -101,6 +102,7 @@ export default function MapView({
       style: PARCEL_STYLE,
       onEachFeature: (feature, layer) => {
         layer.on('click', () => {
+          if (measureModeRef.current) return;
           if (selectedLayerRef.current) {
             selectedLayerRef.current.setStyle(PARCEL_STYLE);
           }
@@ -264,6 +266,11 @@ export default function MapView({
     if (!tileLayerRef.current || !mapRef.current) return;
     tileLayerRef.current.setUrl(TILES[tileMode].url);
   }, [tileMode]);
+
+  // Keep measureMode ref in sync
+  useEffect(() => {
+    measureModeRef.current = measureMode;
+  }, [measureMode]);
 
   // Measure tool click handler
   useEffect(() => {
