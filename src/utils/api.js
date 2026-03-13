@@ -224,10 +224,11 @@ export function getZoningMapUrl(municipality) {
 }
 
 /**
- * Build HouseSigma sold map URL for nearby comparables.
+ * Build Zealty.ca map URL for nearby comparables (sold listings).
+ * Zealty is a BC-specific MLS map that shows sold/active/expired data.
  */
 export function getComparablesUrl(lat, lng) {
-  return `https://housesigma.com/bc/real-estate/sold/map?lat=${lat}&lon=${lng}&zoom=15&status=sold`;
+  return `https://www.zealty.ca/map.html?lat=${lat}&lng=${lng}&zoom=15`;
 }
 
 /**
