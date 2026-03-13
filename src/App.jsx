@@ -13,6 +13,8 @@ import {
 } from './utils/api';
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
+  const [splashFading, setSplashFading] = useState(false);
   const [selectedParcel, setSelectedParcel] = useState(null);
   const [flyTo, setFlyTo] = useState(null);
   const [toast, setToast] = useState('');
@@ -20,6 +22,13 @@ export default function App() {
   const [measureMode, setMeasureMode] = useState(false);
   const [bookmarks, setBookmarks] = useState(() => getBookmarks());
   const [showBookmarks, setShowBookmarks] = useState(false);
+
+  // Splash screen auto-dismiss
+  useEffect(() => {
+    const fadeTimer = setTimeout(() => setSplashFading(true), 1800);
+    const hideTimer = setTimeout(() => setShowSplash(false), 2400);
+    return () => { clearTimeout(fadeTimer); clearTimeout(hideTimer); };
+  }, []);
 
   const showToast = useCallback((msg, duration = 3000) => {
     setToast(msg);
@@ -160,6 +169,22 @@ export default function App() {
       )}
 
       {toast && <div className="toast">{toast}</div>}
+
+      {showSplash && (
+        <div className={`splash${splashFading ? ' splash-fade' : ''}`}>
+          <div className="splash-content">
+            <svg className="splash-icon" width="56" height="56" viewBox="0 0 100 100">
+              <path d="M20 30 L50 15 L80 30 L80 70 L50 85 L20 70 Z" fill="none" stroke="#60a5fa" strokeWidth="3"/>
+              <path d="M50 15 L50 85" fill="none" stroke="#60a5fa" strokeWidth="2" opacity="0.5"/>
+              <path d="M20 50 L80 50" fill="none" stroke="#60a5fa" strokeWidth="2" opacity="0.5"/>
+              <circle cx="50" cy="50" r="6" fill="#3b82f6"/>
+              <circle cx="50" cy="50" r="3" fill="white"/>
+            </svg>
+            <h1 className="splash-title">LotLine BC</h1>
+            <p className="splash-byline">by David McKay</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
