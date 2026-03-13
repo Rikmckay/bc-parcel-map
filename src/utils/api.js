@@ -1,5 +1,6 @@
 const WFS_BASE = 'https://openmaps.gov.bc.ca/geo/pub/ows';
-const LAYER = 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW';
+const PARCEL_LAYER = 'pub:WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW';
+const ALR_LAYER = 'pub:WHSE_LEGAL_ADMIN_BOUNDARIES.OATS_ALR_POLYS';
 const GEOCODER_BASE = 'https://geocoder.api.gov.bc.ca';
 
 /**
@@ -13,11 +14,54 @@ export async function fetchParcels(bounds, signal) {
     service: 'WFS',
     version: '2.0.0',
     request: 'GetFeature',
-    typeName: LAYER,
+    typeName: PARCEL_LAYER,
     outputFormat: 'application/json',
     srsName: 'EPSG:4326',
     count: '4000',
     CQL_FILTER: `BBOX(SHAPE,${west},${south},${east},${north},'EPSG:4326')`,
+  });
+
+  const res = await fetch(`${WFS_BASE}?${params}`, { signal });
+  if (!res.ok) throw new Error(`WFS error: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Fetch ALR polygons within a bounding box.
+ */
+export async function fetchALR(bounds, signal) {
+  const { west, south, east, north } = bounds;
+
+  const params = new URLSearchParams({
+    service: 'WFS',
+    version: '2.0.0',
+    request: 'GetFeature',
+    typeName: ALR_LAYER,
+    outputFormat: 'application/json',
+    srsName: 'EPSG:4326',
+    count: '500',
+    CQL_FILTER: `BBOX(GEOMETRY,${west},${south},${east},${north},'EPSG:4326')`,
+  });
+
+  const res = await fetch(`${WFS_BASE}?${params}`, { signal });
+  if (!res.ok) throw new Error(`WFS ALR error: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Fetch a single parcel by PID number.
+ */
+export async function fetchParcelByPID(pid, signal) {
+  const pidNum = String(pid).replace(/-/g, '');
+
+  const params = new URLSearchParams({
+    service: 'WFS',
+    version: '2.0.0',
+    request: 'GetFeature',
+    typeName: PARCEL_LAYER,
+    outputFormat: 'application/json',
+    srsName: 'EPSG:4326',
+    CQL_FILTER: `PID_NUMBER='${pidNum}'`,
   });
 
   const res = await fetch(`${WFS_BASE}?${params}`, { signal });
@@ -101,4 +145,50 @@ export function formatPID(pid) {
   if (!pid) return 'N/A';
   const s = String(pid).padStart(9, '0');
   return `${s.slice(0, 3)}-${s.slice(3, 6)}-${s.slice(6, 9)}`;
+}
+
+/**
+ * Build Google Street View URL for a lat/lng.
+ */
+export function getStreetViewUrl(lat, lng) {
+  return `https://www.google.com/maps?layer=c&cbll=${lat},${lng}`;
+}
+
+/**
+ * Build a share URL for a PID.
+ */
+export function getShareUrl(pid) {
+  const base = window.location.origin + window.location.pathname;
+  const pidClean = String(pid).replace(/-/g, '');
+  return `${base}?pid=${pidClean}`;
+}
+
+// --- Bookmark helpers (localStorage) ---
+const BOOKMARKS_KEY = 'bc-parcel-bookmarks';
+
+export function getBookmarks() {
+  try {
+    return JSON.parse(localStorage.getItem(BOOKMARKS_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+export function addBookmark(parcel) {
+  const bookmarks = getBookmarks();
+  if (!bookmarks.find((b) => b.pid === parcel.pid)) {
+    bookmarks.push(parcel);
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+  }
+  return bookmarks;
+}
+
+export function removeBookmark(pid) {
+  const bookmarks = getBookmarks().filter((b) => b.pid !== pid);
+  localStorage.setItem(BOOKMARKS_KEY, JSON.stringify(bookmarks));
+  return bookmarks;
+}
+
+export function isBookmarked(pid) {
+  return getBookmarks().some((b) => b.pid === pid);
 }
