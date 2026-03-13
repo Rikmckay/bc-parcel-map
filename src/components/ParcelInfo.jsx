@@ -93,15 +93,11 @@ export default function ParcelInfo({ feature, onClose, onBookmark, onToast }) {
   };
 
   const handleBCAssessment = () => {
-    const centroid = getCentroid();
-    if (centroid) {
-      window.open(getBCAssessmentUrl(centroid.lat, centroid.lng), '_blank');
-    } else {
-      navigator.clipboard.writeText(pid).then(() => {
-        onToast('PID copied - paste in search');
-      }).catch(() => {});
-      window.open('https://www.bcassessment.ca/', '_blank');
-    }
+    const textToCopy = address || pid;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      onToast(address ? 'Address copied - paste in search' : 'PID copied - paste in search');
+    }).catch(() => {});
+    window.open('https://www.bcassessment.ca/Property/AssessmentSearch', '_blank');
   };
 
   const handleLTSA = () => {
