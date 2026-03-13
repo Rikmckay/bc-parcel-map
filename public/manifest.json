@@ -1,6 +1,6 @@
 {
-  "name": "BC Parcel Map",
-  "short_name": "Parcel Map",
+  "name": "LotLine BC",
+  "short_name": "LotLine BC",
   "description": "View property boundaries across British Columbia",
   "start_url": "/",
   "display": "standalone",

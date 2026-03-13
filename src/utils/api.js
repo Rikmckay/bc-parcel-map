@@ -261,7 +261,7 @@ export function printParcelReport({ pid, address, area, ownerType, municipality,
   ${lat ? `<div class="field"><label>Coordinates</label><span>${lat.toFixed(6)}, ${lng.toFixed(6)}</span></div>` : ''}
 </div>
 <div class="divider"></div>
-<p class="footer">Generated from BC Parcel Map on ${new Date().toLocaleDateString('en-CA')}. Data source: ParcelMap BC / BC Open Government Licence.</p>
+<p class="footer">Generated from LotLine BC on ${new Date().toLocaleDateString('en-CA')}. Data source: ParcelMap BC / BC Open Government Licence.</p>
 <script>window.print();</script>
 </body></html>`;
 
