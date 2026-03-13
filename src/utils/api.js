@@ -163,6 +163,106 @@ export function getShareUrl(pid) {
   return `${base}?pid=${pidClean}`;
 }
 
+/**
+ * Build BC Assessment map search URL centered on coordinates.
+ * No direct PID deep-link exists, so we center the map on the parcel.
+ */
+export function getBCAssessmentUrl(lat, lng) {
+  return `https://www.bcassessment.ca/Property/Mapsearch?sp=1&act=&x=${lng}&y=${lat}&z=17`;
+}
+
+/**
+ * Build LTSA title search URL.
+ * LTSA Explorer requires a paid account. Opens the search page.
+ */
+export function getLTSAUrl() {
+  return 'https://ltsa.ca/property-owners/how-can-i/search-for-a-title/';
+}
+
+/**
+ * Build Land Owner Transparency Registry search URL with PID.
+ */
+export function getLOTRUrl(pid) {
+  return `https://landtransparency.ca/search/?pid=${String(pid).replace(/-/g, '')}`;
+}
+
+/**
+ * Map municipality name to its local GIS/zoning viewer URL.
+ * Falls back to BC Land Use map if municipality not mapped.
+ */
+const ZONING_MAP_URLS = {
+  'PARKSVILLE': 'https://maps.parksville.ca/',
+  'QUALICUM BEACH': 'https://qualicumbeach.ca/maps/',
+  'NANAIMO': 'https://www.nanaimo.ca/property-maps',
+  'LANTZVILLE': 'https://www.lantzville.ca/cms/wpattachments/wpID348atID711.pdf',
+  'NORTH COWICHAN': 'https://northcowichan.ca/services/maps',
+  'DUNCAN': 'https://duncan.ca/maps/',
+  'COURTENAY': 'https://www.courtenay.ca/EN/main/municipal-services/maps-gis.html',
+  'COMOX': 'https://www.comox.ca/maps',
+  'CAMPBELL RIVER': 'https://www.campbellriver.ca/your-city-hall/maps',
+  'VICTORIA': 'https://maps.victoria.ca/',
+  'SAANICH': 'https://www.saanich.ca/EN/main/local-government/maps.html',
+  'VANCOUVER': 'https://maps.vancouver.ca/van-map/',
+  'SURREY': 'https://cosmos.surrey.ca/geo_ref/Images/Zoning/',
+  'KELOWNA': 'https://maps.kelowna.ca/',
+  'KAMLOOPS': 'https://maps.kamloops.ca/',
+};
+
+export function getZoningMapUrl(municipality) {
+  if (!municipality) return null;
+  const key = municipality.toUpperCase().trim();
+  return ZONING_MAP_URLS[key] || null;
+}
+
+/**
+ * Build BC Assessment area search URL for comparables.
+ */
+export function getComparablesUrl(lat, lng) {
+  return `https://www.bcassessment.ca/Property/Mapsearch?sp=1&act=&x=${lng}&y=${lat}&z=16`;
+}
+
+/**
+ * Generate a printable HTML page for a parcel report.
+ */
+export function printParcelReport({ pid, address, area, ownerType, municipality, planNumber, parcelClass, parcelName, lat, lng }) {
+  const html = `<!DOCTYPE html>
+<html><head>
+<title>Parcel Report - ${pid}</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; color: #1f2937; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .subtitle { color: #6b7280; font-size: 14px; margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .field label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #9ca3af; margin-bottom: 2px; }
+  .field span { font-size: 15px; font-weight: 500; }
+  .divider { border-top: 1px solid #e5e7eb; margin: 20px 0; }
+  .footer { font-size: 11px; color: #9ca3af; margin-top: 32px; }
+  @media print { body { margin: 20px; } }
+</style>
+</head><body>
+<h1>${parcelName || 'Property Report'}</h1>
+<p class="subtitle">${address || 'Address not available'}</p>
+<div class="grid">
+  <div class="field"><label>PID</label><span>${pid}</span></div>
+  <div class="field"><label>Area</label><span>${area}</span></div>
+  <div class="field"><label>Owner Type</label><span>${ownerType}</span></div>
+  <div class="field"><label>Municipality</label><span>${municipality}</span></div>
+  ${planNumber ? `<div class="field"><label>Plan</label><span>${planNumber}</span></div>` : ''}
+  ${parcelClass ? `<div class="field"><label>Class</label><span>${parcelClass}</span></div>` : ''}
+  ${lat ? `<div class="field"><label>Coordinates</label><span>${lat.toFixed(6)}, ${lng.toFixed(6)}</span></div>` : ''}
+</div>
+<div class="divider"></div>
+<p class="footer">Generated from BC Parcel Map on ${new Date().toLocaleDateString('en-CA')}. Data source: ParcelMap BC / BC Open Government Licence.</p>
+<script>window.print();</script>
+</body></html>`;
+
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+  }
+}
+
 // --- Bookmark helpers (localStorage) ---
 const BOOKMARKS_KEY = 'bc-parcel-bookmarks';
 

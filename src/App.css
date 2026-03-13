@@ -354,6 +354,12 @@ html, body, #root {
   margin-bottom: 14px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.parcel-actions::-webkit-scrollbar {
+  display: none;
 }
 
 .parcel-action-btn {

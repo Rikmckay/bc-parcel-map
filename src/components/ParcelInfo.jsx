@@ -5,6 +5,12 @@ import {
   reverseGeocode,
   getStreetViewUrl,
   getShareUrl,
+  getBCAssessmentUrl,
+  getLTSAUrl,
+  getLOTRUrl,
+  getZoningMapUrl,
+  getComparablesUrl,
+  printParcelReport,
   isBookmarked,
 } from '../utils/api';
 
@@ -87,11 +93,58 @@ export default function ParcelInfo({ feature, onClose, onBookmark, onToast }) {
   };
 
   const handleBCAssessment = () => {
-    // Copy PID and open BC Assessment
+    const centroid = getCentroid();
+    if (centroid) {
+      window.open(getBCAssessmentUrl(centroid.lat, centroid.lng), '_blank');
+    } else {
+      navigator.clipboard.writeText(pid).then(() => {
+        onToast('PID copied - paste in search');
+      }).catch(() => {});
+      window.open('https://www.bcassessment.ca/', '_blank');
+    }
+  };
+
+  const handleLTSA = () => {
     navigator.clipboard.writeText(pid).then(() => {
-      onToast('PID copied - paste in search');
+      onToast('PID copied for title search');
     }).catch(() => {});
-    window.open('https://www.bcassessment.ca/', '_blank');
+    window.open(getLTSAUrl(), '_blank');
+  };
+
+  const handleLOTR = () => {
+    window.open(getLOTRUrl(pidNum), '_blank');
+  };
+
+  const handleZoning = () => {
+    const url = getZoningMapUrl(municipality);
+    if (url) {
+      window.open(url, '_blank');
+    } else {
+      onToast('No zoning map available for this municipality');
+    }
+  };
+
+  const handleComparables = () => {
+    const centroid = getCentroid();
+    if (centroid) {
+      window.open(getComparablesUrl(centroid.lat, centroid.lng), '_blank');
+    }
+  };
+
+  const handlePrint = () => {
+    const centroid = getCentroid();
+    printParcelReport({
+      pid,
+      address: address || '',
+      area,
+      ownerType,
+      municipality,
+      planNumber,
+      parcelClass,
+      parcelName,
+      lat: centroid?.lat,
+      lng: centroid?.lng,
+    });
   };
 
   const handleBookmark = () => {
@@ -152,6 +205,42 @@ export default function ParcelInfo({ feature, onClose, onBookmark, onToast }) {
             <path d="M12 8v8M8 21l4-5 4 5" />
           </svg>
           <span>Street View</span>
+        </button>
+        <button className="parcel-action-btn" onClick={handleLTSA} title="Title Search (LTSA)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          <span>Title</span>
+        </button>
+        {getZoningMapUrl(municipality) && (
+          <button className="parcel-action-btn" onClick={handleZoning} title="View Zoning Map">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+            </svg>
+            <span>Zoning</span>
+          </button>
+        )}
+        <button className="parcel-action-btn" onClick={handleComparables} title="View Nearby Properties">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Comps</span>
+        </button>
+        <button className="parcel-action-btn" onClick={handlePrint} title="Print Parcel Report">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 6 2 18 2 18 9" />
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+            <rect x="6" y="14" width="12" height="8" />
+          </svg>
+          <span>Print</span>
         </button>
         <button
           className={`parcel-action-btn${bookmarked ? ' bookmarked' : ''}`}
