@@ -45,11 +45,11 @@ When you tap a parcel, a row of action buttons appears. Swipe left to see them a
 | Button | What It Does |
 |--------|-------------|
 | **Share** | Copies a direct link to this property. Anyone with the link sees this exact parcel. |
-| **Assessment** | Opens BC Assessment's map centered on the property for assessed values, tax info, and sales history. |
+| **Assessment** | Opens BC Assessment's search page and copies the address to your clipboard. Paste it in the search box to look up assessed values, tax info, and sales history. |
 | **Street View** | Opens Google Street View at the property location. |
-| **Title** | Opens LTSA title search and copies the PID to your clipboard. Paste it in LTSA Explorer to look up the title. (Requires an LTSA account.) |
-| **Zoning** | Opens the municipality's GIS/zoning map viewer. Available for Parksville, Qualicum Beach, Nanaimo, Victoria, Vancouver, and other mapped municipalities. |
-| **Comps** | Opens BC Assessment's map zoomed out to show surrounding properties for comparable analysis. |
+| **Title** | Opens myLTSA login and copies the PID to your clipboard. Log in and paste the PID to search for the title. (Requires a myLTSA account.) |
+| **Zoning** | Opens the municipality's GIS/zoning map viewer. Falls back to BC's iMapBC viewer for municipalities without a dedicated zoning map. |
+| **Comps** | Opens Realtor.ca's map centered on the property to view nearby listings for comparable analysis. |
 | **Print** | Opens a clean, printable property report in a new window. Print it or save as PDF. |
 | **Save** | Bookmarks the property for quick access later. Saved properties are stored on your device. |
 
