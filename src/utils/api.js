@@ -209,9 +209,18 @@ const ZONING_MAP_URLS = {
 };
 
 export function getZoningMapUrl(municipality) {
-  if (!municipality) return null;
-  const key = municipality.toUpperCase().trim();
-  return ZONING_MAP_URLS[key] || null;
+  if (!municipality || municipality === 'N/A') return null;
+  // WFS returns "Parksville, City of" format - extract the city name
+  const raw = municipality.toUpperCase().trim();
+  // Try exact match first
+  if (ZONING_MAP_URLS[raw]) return ZONING_MAP_URLS[raw];
+  // Try extracting name before comma ("Parksville, City of" → "PARKSVILLE")
+  const beforeComma = raw.split(',')[0].trim();
+  if (ZONING_MAP_URLS[beforeComma]) return ZONING_MAP_URLS[beforeComma];
+  // Try extracting name after "of" ("District of North Cowichan" → "NORTH COWICHAN")
+  const afterOf = raw.replace(/^.*?\bOF\b\s*/i, '').trim();
+  if (afterOf !== raw && ZONING_MAP_URLS[afterOf]) return ZONING_MAP_URLS[afterOf];
+  return null;
 }
 
 /**
