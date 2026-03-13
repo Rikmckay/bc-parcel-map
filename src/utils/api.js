@@ -112,6 +112,10 @@ export async function reverseGeocode(lat, lng, signal) {
     );
     if (!res.ok) return null;
     const data = await res.json();
+    // nearest.geojson returns a single Feature, not a FeatureCollection
+    if (data.type === 'Feature' && data.properties?.fullAddress) {
+      return data.properties.fullAddress;
+    }
     if (data.features && data.features.length > 0) {
       return data.features[0].properties.fullAddress;
     }
