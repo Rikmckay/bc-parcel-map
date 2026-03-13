@@ -209,7 +209,9 @@ const ZONING_MAP_URLS = {
 };
 
 export function getZoningMapUrl(municipality) {
-  if (!municipality || municipality === 'N/A') return null;
+  if (!municipality || municipality === 'N/A') {
+    return 'https://maps.gov.bc.ca/ess/hm/imap4m/';
+  }
   // WFS returns "Parksville, City of" format - extract the city name
   const raw = municipality.toUpperCase().trim();
   // Try exact match first
@@ -220,7 +222,8 @@ export function getZoningMapUrl(municipality) {
   // Try extracting name after "of" ("District of North Cowichan" → "NORTH COWICHAN")
   const afterOf = raw.replace(/^.*?\bOF\b\s*/i, '').trim();
   if (afterOf !== raw && ZONING_MAP_URLS[afterOf]) return ZONING_MAP_URLS[afterOf];
-  return null;
+  // Fallback to BC iMapBC viewer
+  return 'https://maps.gov.bc.ca/ess/hm/imap4m/';
 }
 
 /**
