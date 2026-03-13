@@ -224,11 +224,11 @@ export function getZoningMapUrl(municipality) {
 }
 
 /**
- * Build Zealty.ca map URL for nearby comparables (sold listings).
- * Zealty is a BC-specific MLS map that shows sold/active/expired data.
+ * Build Realtor.ca map URL centered on the property for nearby comparables.
+ * Uses hash-based deep-link with ZoomLevel=14 for a neighbourhood view.
  */
 export function getComparablesUrl(lat, lng) {
-  return `https://www.zealty.ca/map.html?lat=${lat}&lng=${lng}&zoom=15`;
+  return `https://www.realtor.ca/map#ZoomLevel=14&Center=${lat}%2C${lng}&Sort=6-D&PropertySearchTypeId=0`;
 }
 
 /**
