@@ -224,10 +224,10 @@ export function getZoningMapUrl(municipality) {
 }
 
 /**
- * Build BC Assessment area search URL for comparables.
+ * Build HouseSigma sold map URL for nearby comparables.
  */
 export function getComparablesUrl(lat, lng) {
-  return `https://www.bcassessment.ca/Property/Mapsearch?sp=1&act=&x=${lng}&y=${lat}&z=16`;
+  return `https://housesigma.com/bc/real-estate/sold/map?lat=${lat}&lon=${lng}&zoom=15&status=sold`;
 }
 
 /**
