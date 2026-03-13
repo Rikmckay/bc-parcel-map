@@ -102,9 +102,9 @@ export default function ParcelInfo({ feature, onClose, onBookmark, onToast }) {
 
   const handleLTSA = () => {
     navigator.clipboard.writeText(pid).then(() => {
-      onToast('PID copied for title search');
+      onToast('PID copied - paste in myLTSA search');
     }).catch(() => {});
-    window.open(getLTSAUrl(), '_blank');
+    window.open('https://apps.ltsa.ca/iam/login', '_blank');
   };
 
   const handleLOTR = () => {
